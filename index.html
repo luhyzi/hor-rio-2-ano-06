@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horário Escolar</title>
+    <style>
+        /* --- Reset Básico --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #050505;
+            min-height: 100vh;
+            width: 100vw;
+            overflow-x: hidden;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            color: white;
+            position: relative;
+            padding: 20px 0;
+        }
+
+        /* --- ANIMAÇÕES --- */
+        @keyframes entradaSuave {
+            0% { opacity: 0; transform: translateY(50px) scale(0.95); filter: blur(10px); }
+            100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+        }
+
+        @keyframes trocaTabela {
+            0% { opacity: 0; transform: translateY(20px); filter: blur(5px); }
+            100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(76, 175, 80, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); }
+        }
+
+        @keyframes pulseRed {
+            0% { box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 68, 68, 0); }
+        }
+
+        /* --- Fundo de Partículas --- */
+        .bubbles-container {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0; left: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .bubble {
+            position: absolute;
+            bottom: -50px;
+            background-color: #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.4);
+            animation: subir 15s infinite linear;
+            opacity: 0.9;
+        }
+
+        .bubble:nth-child(1) { width: 12px; height: 12px; left: 10%; animation-duration: 9s; }
+        .bubble:nth-child(2) { width: 8px; height: 8px; left: 25%; animation-duration: 14s; delay: 2s; }
+        .bubble:nth-child(3) { width: 15px; height: 15px; left: 40%; animation-duration: 12s; delay: 1s; }
+        .bubble:nth-child(4) { width: 10px; height: 10px; left: 60%; animation-duration: 10s; delay: 3s; }
+        .bubble:nth-child(5) { width: 6px; height: 6px; left: 75%; animation-duration: 16s; delay: 0.5s; }
+        .bubble:nth-child(6) { width: 14px; height: 14px; left: 90%; animation-duration: 11s; delay: 2.5s; }
+
+        @keyframes subir {
+            0% { transform: translateY(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 0.8; }
+            100% { transform: translateY(-110vh); opacity: 0; }
+        }
+
+        /* --- UI ELEMENTS --- */
+        .toggle-container {
+            z-index: 20;
+            display: flex;
+            justify-content: center;
+            opacity: 0;
+            animation: entradaSuave 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.2s forwards;
+        }
+
+        .pill {
+            background: rgba(20, 20, 20, 0.6);
+            backdrop-filter: blur(5px);
+            border-radius: 50px;
+            padding: 4px;
+            display: flex;
+            position: relative;
+            width: 220px;
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+
+        .pill-btn {
+            flex: 1;
+            text-align: center;
+            padding: 10px 0;
+            font-size: 0.9rem;
+            cursor: pointer;
+            z-index: 2;
+            color: #aaa;
+            transition: color 0.3s;
+            font-weight: 500;
+        }
+
+        .pill-btn.active { color: #fff; font-weight: bold; text-shadow: 0 0 8px rgba(255,255,255,0.5); }
+        
+        .pill-bg {
+            position: absolute;
+            top: 4px; left: 4px;
+            width: calc(50% - 4px);
+            height: calc(100% - 8px);
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50px;
+            transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+            z-index: 1;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .glass-card {
+            z-index: 10;
+            width: 96vw;
+            max-width: 650px;
+            background: rgba(30, 30, 30, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 20px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.8);
+            opacity: 0;
+            animation: entradaSuave 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.4s forwards;
+        }
+
+        header { text-align: center; }
+        h1 { font-size: 1.5rem; margin-bottom: 2px; color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.3); }
+        .turma { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; opacity: 0.8; }
+
+        .content-area { display: none; flex-direction: column; gap: 5px; }
+        .content-area.active { display: flex; animation: trocaTabela 0.6s ease-out forwards; }
+
+        .row { display: flex; justify-content: space-between; gap: 3px; }
+        .cell {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px 0;
+            border-radius: 5px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 3.2vw;
+            color: #eee;
+            font-weight: 500;
+        }
+        @media (min-width: 500px) { .cell { font-size: 13px; padding: 12px 0; } }
+        .header-cell { background: rgba(255, 255, 255, 0.15); font-weight: bold; color: #fff; }
+        .tempo-col { flex: 0.4; background: transparent; font-weight: bold; color: #ccc; border: 1px solid rgba(255,255,255,0.05); }
+        .row.intervalo .cell {
+            background: rgba(220, 60, 60, 0.25); color: #ffcccc;
+            font-weight: bold; letter-spacing: 2px; text-transform: uppercase;
+            font-size: 2.8vw; border: 1px solid rgba(255, 100, 100, 0.2);
+        }
+        @media (min-width: 500px) { .row.intervalo .cell { font-size: 11px; } }
+
+        /* CARD AGORA */
+        .now-card {
+            z-index: 10;
+            width: 90vw;
+            max-width: 300px;
+            /* Um pouco mais alto para caber a próxima aula */
+            padding: 20px 0; 
+            
+            background: rgba(30, 30, 30, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            border-radius: 20px;
+            
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            gap: 5px;
+            
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            opacity: 0;
+            animation: entradaSuave 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.6s forwards;
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.5s ease;
+        }
+
+        .status-dot {
+            width: 10px; height: 10px;
+            background-color: #4CAF50;
+            border-radius: 50%;
+            margin-bottom: 5px;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.offline { background-color: #ff4444; animation: pulseRed 2s infinite; }
+        .status-dot.break { background-color: #ffa500; }
+
+        .now-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; color: #aaa; }
+        .now-subject { font-size: 1.6rem; font-weight: bold; color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.2); margin: 2px 0; }
+        .now-time { font-size: 0.8rem; color: #4CAF50; font-weight: 600; background: rgba(76, 175, 80, 0.1); padding: 2px 10px; border-radius: 20px; margin-bottom: 10px;}
+
+        /* SEÇÃO PRÓXIMA AULA */
+        .next-section {
+            width: 80%;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        
+        .next-label { font-size: 0.7rem; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+        .next-subject { font-size: 1rem; color: #ddd; font-weight: 500; }
+
+    </style>
+</head>
+<body>
+
+    <div class="bubbles-container">
+        <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+        <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+    </div>
+
+    <div class="toggle-container">
+        <div class="pill">
+            <div class="pill-bg" id="pill-bg"></div>
+            <div class="pill-btn active" onclick="mudarTurno('manha')">Manhã</div>
+            <div class="pill-btn" onclick="mudarTurno('tarde')">Tarde</div>
+        </div>
+    </div>
+
+    <div class="glass-card">
+        <header>
+            <div class="turma">Turma: 2º Ano 06</div>
+            <h1 id="titulo-turno">Horários da Manhã</h1>
+        </header>
+
+        <div id="manha" class="content-area active">
+            <div class="row"><div class="cell tempo-col header-cell">H</div><div class="cell header-cell">Seg</div><div class="cell header-cell">Ter</div><div class="cell header-cell">Qua</div><div class="cell header-cell">Qui</div><div class="cell header-cell">Sex</div></div>
+            <div class="row"><div class="cell tempo-col">1º</div><div class="cell">Mat</div><div class="cell">Port</div><div class="cell">Port</div><div class="cell">Mat</div><div class="cell">E.O.Mat</div></div>
+            <div class="row"><div class="cell tempo-col">2º</div><div class="cell">Mat</div><div class="cell">Port</div><div class="cell">Port</div><div class="cell">Mat</div><div class="cell">E.O.Mat</div></div>
+            <div class="row"><div class="cell tempo-col">3º</div><div class="cell">Quím</div><div class="cell">Geog</div><div class="cell">Mat</div><div class="cell">Ing</div><div class="cell">Ing 2</div></div>
+            <div class="row intervalo"><div class="cell tempo-col" style="font-size: 2.5vw;">10:00</div><div class="cell" style="flex: 5;">INTERVALO</div></div>
+            <div class="row"><div class="cell tempo-col">4º</div><div class="cell">Quím</div><div class="cell">Fís</div><div class="cell">E.O.Port</div><div class="cell">Port</div><div class="cell">Geog</div></div>
+            <div class="row"><div class="cell tempo-col">5º</div><div class="cell">Ed.Amb</div><div class="cell">Fís</div><div class="cell">E.O.Port</div><div class="cell">Filo</div><div class="cell">Soc</div></div>
+        </div>
+
+        <div id="tarde" class="content-area">
+            <div class="row"><div class="cell tempo-col header-cell">H</div><div class="cell header-cell">Seg</div><div class="cell header-cell">Ter</div><div class="cell header-cell">Qua</div><div class="cell header-cell">Qui</div><div class="cell header-cell">Sex</div></div>
+            <div class="row"><div class="cell tempo-col">1º</div><div class="cell">---</div><div class="cell">---</div><div class="cell">---</div><div class="cell">---</div><div class="cell">---</div></div>
+            <div class="row"><div class="cell tempo-col">2º</div><div class="cell">---</div><div class="cell">---</div><div class="cell">---</div><div class="cell">---</div><div class="cell">---</div></div>
+            <div class="row"><div class="cell tempo-col">3º</div><div class="cell">---</div><div class="cell">---</div><div class="cell">---</div><div class="cell">---</div><div class="cell">---</div></div>
+            <div class="row intervalo"><div class="cell tempo-col" style="font-size: 2.5vw;">16:00</div><div class="cell" style="flex: 5;">INTERVALO</div></div>
+            <div class="row"><div class="cell tempo-col">4º</div><div class="cell">---</div><div class="cell">---</div><div class="cell">---</div><div class="cell">---</div><div class="cell">---</div></div>
+            <div class="row"><div class="cell tempo-col">5º</div><div class="cell">---</div><div class="cell">---</div><div class="cell">---</div><div class="cell">---</div><div class="cell">---</div></div>
+        </div>
+    </div>
+
+    <div class="now-card" id="now-card">
+        <div class="status-dot" id="status-dot"></div>
+        <div class="now-label" id="now-label">Agora</div>
+        <div class="now-subject" id="aula-atual">Carregando...</div>
+        <div class="now-time" id="horario-atual">--:--</div>
+        
+        <div class="next-section" id="next-section">
+            <div class="next-label">A Seguir</div>
+            <div class="next-subject" id="proxima-aula">...</div>
+        </div>
+    </div>
+
+    <script>
+        function mudarTurno(turno) {
+            const titulo = document.getElementById('titulo-turno');
+            const bg = document.getElementById('pill-bg');
+            const btns = document.querySelectorAll('.pill-btn');
+            
+            if (turno === 'manha') {
+                bg.style.transform = 'translateX(0)';
+                btns[0].classList.add('active');
+                btns[1].classList.remove('active');
+                titulo.innerText = "Horários da Manhã";
+                document.getElementById('tarde').classList.remove('active');
+                document.getElementById('manha').classList.add('active');
+            } else {
+                bg.style.transform = 'translateX(100%)';
+                btns[0].classList.remove('active');
+                btns[1].classList.add('active');
+                titulo.innerText = "Horários da Tarde";
+                document.getElementById('manha').classList.remove('active');
+                document.getElementById('tarde').classList.add('active');
+            }
+        }
+
+        const horarios = [
+            { inicio: 450, fim: 500, nome: '1ª Aula', display: '07:30 - 08:20' },
+            { inicio: 500, fim: 550, nome: '2ª Aula', display: '08:20 - 09:10' },
+            { inicio: 550, fim: 600, nome: '3ª Aula', display: '09:10 - 10:00' },
+            { inicio: 600, fim: 615, nome: 'Intervalo', display: '10:00 - 10:15' },
+            { inicio: 615, fim: 665, nome: '4ª Aula', display: '10:15 - 11:05' },
+            { inicio: 665, fim: 715, nome: '5ª Aula', display: '11:05 - 11:55' }
+        ];
+
+        const gradeManha = {
+            1: ['Matemática', 'Matemática', 'Química', 'INTERVALO', 'Química', 'Ed. Ambiental'],
+            2: ['Português', 'Português', 'Geografia', 'INTERVALO', 'Física', 'Física'],
+            3: ['Português', 'Português', 'Matemática', 'INTERVALO', 'E.O. Port', 'E.O. Port'],
+            4: ['Matemática', 'Matemática', 'Inglês', 'INTERVALO', 'Português', 'Filosofia'],
+            5: ['E.O. Mat', 'E.O. Mat', 'Inglês 2', 'INTERVALO', 'Geografia', 'Sociologia']
+        };
+
+        function atualizarAulaAtual() {
+            const agora = new Date();
+            const diaSemana = agora.getDay();
+            const minutosAtuais = agora.getHours() * 60 + agora.getMinutes();
+            
+            const divMateria = document.getElementById('aula-atual');
+            const divHorario = document.getElementById('horario-atual');
+            const divProxima = document.getElementById('proxima-aula');
+            const label = document.getElementById('now-label');
+            const dot = document.getElementById('status-dot');
+            const card = document.getElementById('now-card');
+            const nextSection = document.getElementById('next-section');
+
+            // --- SEM AULA ---
+            function setSemAula(mensagem, tempo) {
+                divMateria.innerText = mensagem;
+                divMateria.style.color = "#ff4444"; 
+                divHorario.innerText = tempo;
+                
+                label.style.display = 'none'; 
+                nextSection.style.display = 'none'; // Esconde a próxima aula
+                card.style.borderColor = '#ff4444'; 
+                dot.classList.add('offline'); 
+                dot.classList.remove('break');
+            }
+
+            // --- COM AULA ---
+            function setComAula() {
+                label.style.display = 'block'; 
+                nextSection.style.display = 'flex'; // Mostra a próxima aula
+                dot.classList.remove('offline'); 
+                dot.classList.remove('break');
+            }
+
+            // Fim de semana
+            if (diaSemana === 0 || diaSemana === 6) {
+                setSemAula("Bom Descanso!", "Fim de Semana");
+                return;
+            }
+
+            let aulaEncontrada = null;
+            let indexAula = -1;
+
+            for (let i = 0; i < horarios.length; i++) {
+                if (minutosAtuais >= horarios[i].inicio && minutosAtuais < horarios[i].fim) {
+                    aulaEncontrada = horarios[i];
+                    indexAula = i;
+                    break;
+                }
+            }
+
+            if (aulaEncontrada) {
+                setComAula(); 
+                
+                // LÓGICA DA AULA ATUAL
+                const materiasDoDia = gradeManha[diaSemana];
+                let nomeAulaAtual = "";
+
+                if (aulaEncontrada.nome === 'Intervalo') {
+                    nomeAulaAtual = "RECREIO";
+                    divMateria.style.color = "#ffa500"; 
+                    card.style.borderColor = '#ffa500';
+                    dot.classList.add('break');
+                } else {
+                    card.style.borderColor = '#4CAF50'; 
+                    dot.classList.remove('break');
+                    if (materiasDoDia && materiasDoDia[indexAula]) {
+                        nomeAulaAtual = materiasDoDia[indexAula];
+                    } else {
+                        nomeAulaAtual = "Aula Livre";
+                    }
+                    divMateria.style.color = "#4CAF50"; 
+                }
+                divMateria.innerText = nomeAulaAtual;
+                divHorario.innerText = `${aulaEncontrada.nome} (${aulaEncontrada.display})`;
+
+                // LÓGICA DA PRÓXIMA AULA
+                let indexProxima = indexAula + 1;
+                if (indexProxima < horarios.length) {
+                    const proxHorario = horarios[indexProxima];
+                    
+                    if (proxHorario.nome === 'Intervalo') {
+                        divProxima.innerText = "RECREIO";
+                        divProxima.style.color = "#ffa500";
+                    } else {
+                        if (materiasDoDia && materiasDoDia[indexProxima]) {
+                            divProxima.innerText = materiasDoDia[indexProxima];
+                            divProxima.style.color = "#ddd"; // Branco acinzentado
+                        } else {
+                            divProxima.innerText = "Aula Livre";
+                        }
+                    }
+                } else {
+                    divProxima.innerText = "Saída";
+                    divProxima.style.color = "#ff4444";
+                }
+
+            } else {
+                // Fora do horário
+                if (minutosAtuais < 450) {
+                    setSemAula("Bom Dia!", "A aula começa 07:30");
+                } else if (minutosAtuais >= 715) {
+                    setSemAula("Fim das Aulas", "Até amanhã!");
+                } else {
+                    setSemAula("Sem Aula", "--:--");
+                }
+            }
+        }
+
+        setInterval(atualizarAulaAtual, 1000);
+        atualizarAulaAtual();
+    </script>
+</body>
+</html>
