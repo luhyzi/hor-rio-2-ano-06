@@ -185,8 +185,7 @@
             z-index: 10;
             width: 90vw;
             max-width: 300px;
-            /* Um pouco mais alto para caber a próxima aula */
-            padding: 20px 0; 
+            padding: 20px 0;
             
             background: rgba(30, 30, 30, 0.6);
             backdrop-filter: blur(8px);
@@ -421,7 +420,7 @@
                     } else {
                         if (materiasDoDia && materiasDoDia[indexProxima]) {
                             divProxima.innerText = materiasDoDia[indexProxima];
-                            divProxima.style.color = "#ddd"; // Branco acinzentado
+                            divProxima.style.color = "#ddd"; 
                         } else {
                             divProxima.innerText = "Aula Livre";
                         }
@@ -436,7 +435,15 @@
                 if (minutosAtuais < 450) {
                     setSemAula("Bom Dia!", "A aula começa 07:30");
                 } else if (minutosAtuais >= 715) {
-                    setSemAula("Fim das Aulas", "Até amanhã!");
+                    
+                    // --- MUDANÇA AQUI (Sexta > 16:30) ---
+                    let textoSub = "Até amanhã!";
+                    if (diaSemana === 5 && minutosAtuais >= 990) { // Sexta e > 16:30
+                        textoSub = "Até segunda!";
+                    }
+
+                    setSemAula("Fim das Aulas", textoSub);
+
                 } else {
                     setSemAula("Sem Aula", "--:--");
                 }
