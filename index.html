@@ -14,7 +14,7 @@
         }
 
         body {
-            background-color: #050505;
+            background-color: #050505; /* Fundo Preto Liso */
             min-height: 100vh;
             width: 100vw;
             overflow-x: hidden;
@@ -52,7 +52,7 @@
             100% { box-shadow: 0 0 0 0 rgba(255, 68, 68, 0); }
         }
 
-        /* --- Fundo de Partículas --- */
+        /* --- Fundo de Partículas (Bolhas) --- */
         .bubbles-container {
             position: fixed;
             width: 100%;
@@ -72,16 +72,29 @@
             opacity: 0.9;
         }
 
+        /* Configuração variada para 15 bolhas */
         .bubble:nth-child(1) { width: 12px; height: 12px; left: 10%; animation-duration: 9s; }
         .bubble:nth-child(2) { width: 8px; height: 8px; left: 25%; animation-duration: 14s; delay: 2s; }
         .bubble:nth-child(3) { width: 15px; height: 15px; left: 40%; animation-duration: 12s; delay: 1s; }
         .bubble:nth-child(4) { width: 10px; height: 10px; left: 60%; animation-duration: 10s; delay: 3s; }
         .bubble:nth-child(5) { width: 6px; height: 6px; left: 75%; animation-duration: 16s; delay: 0.5s; }
         .bubble:nth-child(6) { width: 14px; height: 14px; left: 90%; animation-duration: 11s; delay: 2.5s; }
+        
+        /* Novas Bolhas */
+        .bubble:nth-child(7) { width: 20px; height: 20px; left: 5%; animation-duration: 18s; delay: 1s; opacity: 0.6; }
+        .bubble:nth-child(8) { width: 5px; height: 5px; left: 15%; animation-duration: 25s; delay: 0s; }
+        .bubble:nth-child(9) { width: 9px; height: 9px; left: 33%; animation-duration: 13s; delay: 4s; }
+        .bubble:nth-child(10) { width: 16px; height: 16px; left: 50%; animation-duration: 20s; delay: 6s; opacity: 0.7; }
+        .bubble:nth-child(11) { width: 7px; height: 7px; left: 65%; animation-duration: 15s; delay: 2s; }
+        .bubble:nth-child(12) { width: 11px; height: 11px; left: 82%; animation-duration: 10s; delay: 5s; }
+        .bubble:nth-child(13) { width: 13px; height: 13px; left: 95%; animation-duration: 17s; delay: 1s; }
+        .bubble:nth-child(14) { width: 6px; height: 6px; left: 20%; animation-duration: 22s; delay: 3s; }
+        .bubble:nth-child(15) { width: 8px; height: 8px; left: 70%; animation-duration: 19s; delay: 0s; }
+
 
         @keyframes subir {
             0% { transform: translateY(0); opacity: 0; }
-            10% { opacity: 1; }
+            10% { opacity: 1; } /* Aparece rápido */
             90% { opacity: 0.8; }
             100% { transform: translateY(-110vh); opacity: 0; }
         }
@@ -242,6 +255,9 @@
 <body>
 
     <div class="bubbles-container">
+        <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+        <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+        <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
         <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
         <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
     </div>
@@ -436,7 +452,7 @@
                     setSemAula("Bom Dia!", "A aula começa 07:30");
                 } else if (minutosAtuais >= 715) {
                     
-                    // --- MUDANÇA AQUI (Sexta > 16:30) ---
+                    // --- MUDANÇA (Sexta > 16:30) ---
                     let textoSub = "Até amanhã!";
                     if (diaSemana === 5 && minutosAtuais >= 990) { // Sexta e > 16:30
                         textoSub = "Até segunda!";
