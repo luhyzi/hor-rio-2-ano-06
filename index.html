@@ -14,7 +14,7 @@
         }
 
         body {
-            background-color: #050505; /* Fundo Preto Liso */
+            background-color: #050505;
             min-height: 100vh;
             width: 100vw;
             overflow-x: hidden;
@@ -29,7 +29,82 @@
             padding: 20px 0;
         }
 
-        /* --- ANIMAÇÕES --- */
+        /* --- TELA DE CARREGAMENTO (Barra de Progresso Realista) --- */
+        .loader-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(5, 5, 5, 0.7);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+        }
+
+        .loader-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            width: 80%;
+            max-width: 250px;
+        }
+
+        .loader-text {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #fff;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            animation: pulseText 0.8s infinite alternate ease-in-out;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: #ffffff; 
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8); 
+            /* Animação total de 3 segundos */
+            animation: fillBar 3s ease forwards;
+        }
+
+        /* Aqui fica a mágica das "travadinhas" */
+        @keyframes fillBar {
+            0%   { width: 0%; }
+            15%  { width: 20%; }
+            25%  { width: 20%; } /* 1ª Travada */
+            40%  { width: 50%; }
+            55%  { width: 50%; } /* 2ª Travada (mais longa) */
+            70%  { width: 80%; }
+            80%  { width: 80%; } /* 3ª Travada (rápida) */
+            95%  { width: 95%; }
+            100% { width: 100%; }
+        }
+
+        @keyframes pulseText {
+            0% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        /* Classe que faz o loader sumir */
+        .loader-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        /* --- ANIMAÇÕES DE ENTRADA --- */
         @keyframes entradaSuave {
             0% { opacity: 0; transform: translateY(50px) scale(0.95); filter: blur(10px); }
             100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
@@ -52,11 +127,10 @@
             100% { box-shadow: 0 0 0 0 rgba(255, 68, 68, 0); }
         }
 
-        /* --- Fundo de Partículas (Bolhas) --- */
+        /* --- Fundo de Partículas --- */
         .bubbles-container {
             position: fixed;
-            width: 100%;
-            height: 100%;
+            width: 100%; height: 100%;
             top: 0; left: 0;
             z-index: 0;
             pointer-events: none;
@@ -72,15 +146,12 @@
             opacity: 0.9;
         }
 
-        /* Configuração variada para 15 bolhas */
         .bubble:nth-child(1) { width: 12px; height: 12px; left: 10%; animation-duration: 9s; }
         .bubble:nth-child(2) { width: 8px; height: 8px; left: 25%; animation-duration: 14s; delay: 2s; }
         .bubble:nth-child(3) { width: 15px; height: 15px; left: 40%; animation-duration: 12s; delay: 1s; }
         .bubble:nth-child(4) { width: 10px; height: 10px; left: 60%; animation-duration: 10s; delay: 3s; }
         .bubble:nth-child(5) { width: 6px; height: 6px; left: 75%; animation-duration: 16s; delay: 0.5s; }
         .bubble:nth-child(6) { width: 14px; height: 14px; left: 90%; animation-duration: 11s; delay: 2.5s; }
-        
-        /* Novas Bolhas */
         .bubble:nth-child(7) { width: 20px; height: 20px; left: 5%; animation-duration: 18s; delay: 1s; opacity: 0.6; }
         .bubble:nth-child(8) { width: 5px; height: 5px; left: 15%; animation-duration: 25s; delay: 0s; }
         .bubble:nth-child(9) { width: 9px; height: 9px; left: 33%; animation-duration: 13s; delay: 4s; }
@@ -91,21 +162,19 @@
         .bubble:nth-child(14) { width: 6px; height: 6px; left: 20%; animation-duration: 22s; delay: 3s; }
         .bubble:nth-child(15) { width: 8px; height: 8px; left: 70%; animation-duration: 19s; delay: 0s; }
 
-
         @keyframes subir {
             0% { transform: translateY(0); opacity: 0; }
-            10% { opacity: 1; } /* Aparece rápido */
+            10% { opacity: 1; }
             90% { opacity: 0.8; }
             100% { transform: translateY(-110vh); opacity: 0; }
         }
 
-        /* --- UI ELEMENTS --- */
+        /* --- UI ELEMENTS (Iniciam invisíveis e só animam depois do load) --- */
         .toggle-container {
             z-index: 20;
             display: flex;
             justify-content: center;
-            opacity: 0;
-            animation: entradaSuave 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.2s forwards;
+            opacity: 0; 
         }
 
         .pill {
@@ -162,7 +231,6 @@
             gap: 15px;
             box-shadow: 0 15px 40px rgba(0,0,0,0.8);
             opacity: 0;
-            animation: entradaSuave 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.4s forwards;
         }
 
         header { text-align: center; }
@@ -216,7 +284,6 @@
             
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             opacity: 0;
-            animation: entradaSuave 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.6s forwards;
             position: relative;
             overflow: hidden;
             transition: border-color 0.5s ease;
@@ -237,7 +304,6 @@
         .now-subject { font-size: 1.6rem; font-weight: bold; color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.2); margin: 2px 0; }
         .now-time { font-size: 0.8rem; color: #4CAF50; font-weight: 600; background: rgba(76, 175, 80, 0.1); padding: 2px 10px; border-radius: 20px; margin-bottom: 10px;}
 
-        /* SEÇÃO PRÓXIMA AULA */
         .next-section {
             width: 80%;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
@@ -250,9 +316,29 @@
         .next-label { font-size: 0.7rem; color: #888; text-transform: uppercase; letter-spacing: 1px; }
         .next-subject { font-size: 1rem; color: #ddd; font-weight: 500; }
 
+        /* --- Sincronização das Animações PÓS-LOADER --- */
+        body.site-loaded .toggle-container {
+            animation: entradaSuave 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
+        }
+        body.site-loaded .glass-card {
+            animation: entradaSuave 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.3s forwards;
+        }
+        body.site-loaded .now-card {
+            animation: entradaSuave 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.5s forwards;
+        }
+
     </style>
 </head>
 <body>
+
+    <div id="loader" class="loader-overlay">
+        <div class="loader-content">
+            <div class="loader-text">Carregando...</div>
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill"></div>
+            </div>
+        </div>
+    </div>
 
     <div class="bubbles-container">
         <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
@@ -310,6 +396,16 @@
     </div>
 
     <script>
+        // --- SCRIPT DO LOADER (Tela de Carregamento 3 Segundos) ---
+        window.addEventListener('load', () => {
+            // A barra leva 3s para encher com as "travadas".
+            setTimeout(() => {
+                document.getElementById('loader').classList.add('hidden');
+                document.body.classList.add('site-loaded');
+            }, 3000); 
+        });
+
+        // --- RESTANTE DO SCRIPT ORIGINAL ---
         function mudarTurno(turno) {
             const titulo = document.getElementById('titulo-turno');
             const bg = document.getElementById('pill-bg');
@@ -362,28 +458,25 @@
             const card = document.getElementById('now-card');
             const nextSection = document.getElementById('next-section');
 
-            // --- SEM AULA ---
             function setSemAula(mensagem, tempo) {
                 divMateria.innerText = mensagem;
                 divMateria.style.color = "#ff4444"; 
                 divHorario.innerText = tempo;
                 
                 label.style.display = 'none'; 
-                nextSection.style.display = 'none'; // Esconde a próxima aula
+                nextSection.style.display = 'none'; 
                 card.style.borderColor = '#ff4444'; 
                 dot.classList.add('offline'); 
                 dot.classList.remove('break');
             }
 
-            // --- COM AULA ---
             function setComAula() {
                 label.style.display = 'block'; 
-                nextSection.style.display = 'flex'; // Mostra a próxima aula
+                nextSection.style.display = 'flex'; 
                 dot.classList.remove('offline'); 
                 dot.classList.remove('break');
             }
 
-            // Fim de semana
             if (diaSemana === 0 || diaSemana === 6) {
                 setSemAula("Bom Descanso!", "Fim de Semana");
                 return;
@@ -403,7 +496,6 @@
             if (aulaEncontrada) {
                 setComAula(); 
                 
-                // LÓGICA DA AULA ATUAL
                 const materiasDoDia = gradeManha[diaSemana];
                 let nomeAulaAtual = "";
 
@@ -425,7 +517,6 @@
                 divMateria.innerText = nomeAulaAtual;
                 divHorario.innerText = `${aulaEncontrada.nome} (${aulaEncontrada.display})`;
 
-                // LÓGICA DA PRÓXIMA AULA
                 let indexProxima = indexAula + 1;
                 if (indexProxima < horarios.length) {
                     const proxHorario = horarios[indexProxima];
@@ -447,19 +538,14 @@
                 }
 
             } else {
-                // Fora do horário
                 if (minutosAtuais < 450) {
                     setSemAula("Bom Dia!", "A aula começa 07:30");
                 } else if (minutosAtuais >= 715) {
-                    
-                    // --- MUDANÇA (Sexta > 16:30) ---
                     let textoSub = "Até amanhã!";
-                    if (diaSemana === 5 && minutosAtuais >= 990) { // Sexta e > 16:30
+                    if (diaSemana === 5 && minutosAtuais >= 990) { 
                         textoSub = "Até segunda!";
                     }
-
                     setSemAula("Fim das Aulas", textoSub);
-
                 } else {
                     setSemAula("Sem Aula", "--:--");
                 }
